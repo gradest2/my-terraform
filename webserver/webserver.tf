@@ -67,5 +67,32 @@ resource "aws_instance" "webserver" {
     #ignore_changes = ["ami", "instnce_type"]
     create_before_destroy = true
   }
+  depends_on = [aws_instance.database] #instance will create when db will created
+}
+
+resource "aws_instance" "database" {
+  #count                  = 1
+  ami                    = "ami-0767046d1677be5a0"
+  instance_type          = "t2.micro"
+  vpc_security_group_ids = [aws_security_group.sg_webserver.id] # Attachment SG
+  #user_data              = file("script") #copy paste file
+
+  tags = {
+    Name    = "Database"
+    Owner   = "Mikhail Gerasimov"
+    Project = "Terraform Lessons"
+  }
+
+  root_block_device {
+    delete_on_termination = true
+    volume_size           = 10
+    volume_type           = "gp2"
+  }
+
+  lifecycle {
+    #prevent_destroy = true #instance can't be destroyed
+    #ignore_changes = ["ami", "instnce_type"]
+    create_before_destroy = true
+  }
 
 }
