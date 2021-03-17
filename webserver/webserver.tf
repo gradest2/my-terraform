@@ -40,7 +40,7 @@ resource "aws_eip" "webserver_static_ip" {
 
 resource "aws_instance" "webserver" {
   #count                  = 1
-  ami                    = "ami-0767046d1677be5a0"
+  ami                    = data.aws_ami.latest_ubuntu.id #latest ami from data.tf
   instance_type          = "t2.micro"
   vpc_security_group_ids = [aws_security_group.sg_webserver.id] # Attachment SG
   #user_data              = file("script") #copy paste file
@@ -72,7 +72,7 @@ resource "aws_instance" "webserver" {
 
 resource "aws_instance" "database" {
   #count                  = 1
-  ami                    = "ami-0767046d1677be5a0"
+  ami                    = data.aws_ami.latest_ubuntu.id #latest ami from data.tf
   instance_type          = "t2.micro"
   vpc_security_group_ids = [aws_security_group.sg_webserver.id] # Attachment SG
   #user_data              = file("script") #copy paste file
