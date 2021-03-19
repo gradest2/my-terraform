@@ -29,70 +29,76 @@ resource "aws_security_group" "sg_webserver" {
   }
 }
 
-resource "aws_eip" "webserver_static_ip" {
-  instance = aws_instance.webserver.id
-
-  tags = {
-    Name  = "WebServer Static IP"
-    Owner = "Mikhail Gerasimov"
-  }
-}
-
-resource "aws_instance" "webserver" {
-  #count                  = 1
-  ami                    = data.aws_ami.latest_ubuntu.id #latest ami from data.tf
-  instance_type          = "t2.micro"
-  vpc_security_group_ids = [aws_security_group.sg_webserver.id] # Attachment SG
-  #user_data              = file("script") #copy paste file
+resource "aws_launch_configuration" "webserver" {
+  name_prefix     = "WebServer-Highly-Available-LC-"
+  image_id        = data.aws_ami.latest_ubuntu.id
+  instance_type   = "t2.micro"
+  security_groups = [aws_security_group.sg_webserver.id]
   user_data = templatefile("script.tpl", {
     f_name = "Mikhail",
     l_name = "Gerasimov",
     names  = ["Vasya", "Olya", "Petya", "Alyona"]
   })
 
-  tags = {
-    Name    = "WebServer"
-    Owner   = "Mikhail Gerasimov"
-    Project = "Terraform Lessons"
-  }
-
-  root_block_device {
-    delete_on_termination = true
-    volume_size           = 10
-    volume_type           = "gp2"
-  }
-
   lifecycle {
-    #prevent_destroy = true #instance can't be destroyed
-    #ignore_changes = ["ami", "instnce_type"]
     create_before_destroy = true
   }
-  depends_on = [aws_instance.database] #instance will create when db will created
 }
 
-resource "aws_instance" "database" {
-  #count                  = 1
-  ami                    = data.aws_ami.latest_ubuntu.id #latest ami from data.tf
-  instance_type          = "t2.micro"
-  vpc_security_group_ids = [aws_security_group.sg_webserver.id] # Attachment SG
-  #user_data              = file("script") #copy paste file
+resource "aws_autoscaling_group" "webserver" {
+  name                 = "ASG-${aws_launch_configuration.webserver.name}"
+  launch_configuration = aws_launch_configuration.webserver.name
+  min_size             = 2
+  max_size             = 2
+  min_elb_capacity     = 2
+  health_check_type    = "ELB"
+  vpc_zone_identifier  = [aws_default_subnet.default_az1.id, aws_default_subnet.default_az2.id]
+  load_balancers       = [aws_elb.webserver.name]
 
-  tags = {
-    Name    = "Database"
-    Owner   = "Mikhail Gerasimov"
-    Project = "Terraform Lessons"
-  }
-
-  root_block_device {
-    delete_on_termination = true
-    volume_size           = 10
-    volume_type           = "gp2"
+  dynamic "tag" {
+    for_each = {
+      Name   = "WebServer in ASG"
+      Owner  = "Mikhail Gerasimov"
+      TAGKEY = "TAGVALUE"
+    }
+    content {
+      key                 = tag.key
+      value               = tag.value
+      propagate_at_launch = true
+    }
   }
 
   lifecycle {
-    #prevent_destroy = true #instance can't be destroyed
-    #ignore_changes = ["ami", "instnce_type"]
     create_before_destroy = true
   }
+}
 
+resource "aws_elb" "webserver" {
+  name               = "WebServer-HA-ELB"
+  availability_zones = [data.aws_availability_zones.available.names[0], data.aws_availability_zones.available.names[1]]
+  security_groups    = [aws_security_group.sg_webserver.id]
+  listener {
+    lb_port           = 80
+    lb_protocol       = "http"
+    instance_port     = 80
+    instance_protocol = "http"
+  }
+  health_check {
+    healthy_threshold   = 2
+    unhealthy_threshold = 2
+    timeout             = 3
+    target              = "HTTP:80/"
+    interval            = 10
+  }
+  tags = {
+    Name = "WebServer-Highly-Available-ELB"
+  }
+}
+
+resource "aws_default_subnet" "default_az1" {
+  availability_zone = data.aws_availability_zones.available.names[0]
+}
+
+resource "aws_default_subnet" "default_az2" {
+  availability_zone = data.aws_availability_zones.available.names[1]
 }

@@ -6,3 +6,5 @@ data "aws_ami" "latest_ubuntu" {
     values = ["ubuntu/images/hvm-ssd/ubuntu-focal-20.04-amd64-server-*"]
   }
 }
+
+data "aws_availability_zones" "available" {}
