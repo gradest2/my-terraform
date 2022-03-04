@@ -1,0 +1,9 @@
+[ru]
+Написать скрипт который делает MySQL Dump базы данных, игнорируя таблицу logs,
+и сохраняет dump в zip файле с timestamp в имени файла и копирует это в AWS S3
+bucket. Сделать Jenkins Job который этот скрипт запускает в 2 ночи каждый раз.
+
+[en]
+Write a script that does a MySQL Dump of the database, ignoring the logs table,
+and save dump in zip file with timestamp in filename and copy it to AWS S3
+bucket. Make a Jenkins Job which this script runs at 2am each time. 
