@@ -1,6 +1,6 @@
-resource "aws_security_group" "jenkins" {
-  name        = "Jenkins SG"
-  description = "Jenkins SG"
+resource "aws_security_group" "sg_jenkins" {
+  name        = "JenkinsSG"
+  description = "JenkinsSG"
 
   ingress {
     description = "TLS from VPC"
@@ -21,9 +21,9 @@ resource "aws_security_group" "jenkins" {
 }
 
 
-resource "aws_security_group" "mysql" {
-  name        = "MySQL SG"
-  description = "MySQL SG"
+resource "aws_security_group" "mysql_sg" {
+  name        = "MySQLSG"
+  description = "MySQLSG"
 
   ingress {
     description = "TLS from VPC"
