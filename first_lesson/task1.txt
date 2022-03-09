@@ -6,4 +6,12 @@ bucket. Сделать Jenkins Job который этот скрипт запу
 [en]
 Write a script that does a MySQL Dump of the database, ignoring the logs table,
 and save dump in zip file with timestamp in filename and copy it to AWS S3
-bucket. Make a Jenkins Job which this script runs at 2am each time. 
+bucket. Make a Jenkins Job which this script runs at 2am each time.
+
+
+********************************************************************************
+[Решение]
+
+- В папке terraform: terraform apply
+- ...
+- mysqldump -u root -h 18.185.53.3 -p zQ11^tda --ignore-table=lesson1.logs lesson1 > lesson1.sql
