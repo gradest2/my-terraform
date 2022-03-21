@@ -1,0 +1,38 @@
+[ru]
+Написать скрипт который делает MySQL Dump базы данных, игнорируя таблицу logs,
+и сохраняет dump в zip файле с timestamp в имени файла и копирует это в AWS S3
+bucket. Сделать Jenkins Job который этот скрипт запускает в 2 ночи каждый раз.
+
+[en]
+Write a script that does a MySQL Dump of the database, ignoring the logs table,
+and save dump in zip file with timestamp in filename and copy it to AWS S3
+bucket. Make a Jenkins Job which this script runs at 2am each time.
+
+
+********************************************************************************
+[Решение ru]
+
+- В папке terraform: terraform apply
+- Настраиваем jenkins, зайдя по "публичный_адрес:8080" инстанса
+- Руками создаем пользователя (https://aws.amazon.com/ru/getting-started/hands-on/backup-to-s3-cli/),
+  для пользователя jenkins делаем aws configure (все это описано в статье).
+- Создаем задачу со свободной конфигурацией, добавляем shell скрипт:
+    export timestamp=$(date +%s)
+    mysqldump  -h 3.120.157.133 --user=root --password=zQ11^tda --ignore-table=lesson1.logs lesson1 > lesson1$timestamp.sql
+    aws s3 cp "lesson1$timestamp.sql" s3://mysqldumpbucket.gerasimov/
+ - В джобе добавляем cron конфигурацию: 0 2 * * *
+ - Ждем запуска в два ночи и профит (я поставил каждую минуту, чтобы не ждать запуска).
+ - Не забываем сделать terrform destroy и удалить ресурсы, созданные руками.
+
+ [Solution en]
+- In the terraform folder: terraform apply
+- Set up jenkins by going to "public_address:8080" instance
+- Create a user by hand (https://aws.amazon.com/ru/getting-started/hands-on/backup-to-s3-cli/),
+  for the jenkins user, we do aws configure (all this is described in the article).
+- Create a task with a free configuration, add a shell script:
+    export timestamp=$(date +%s)
+    mysqldump -h 3.120.157.133 --user=root --password=zQ11^tda --ignore-table=lesson1.logs lesson1 > lesson1$timestamp.sql
+    aws s3 cp "lesson1$timestamp.sql" s3://mysqldumpbucket.gerasimov/
+ - Add cron configuration in job: 0 2 * * *
+ - We are waiting for the launch at two in the morning and profit (I set every minute so as not to wait for the launch).
+ - Don't forget to terrform destroy and delete handmade resources.
