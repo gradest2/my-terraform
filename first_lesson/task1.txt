@@ -24,7 +24,7 @@ bucket. Make a Jenkins Job which this script runs at 2am each time.
  - Ждем запуска в два ночи и профит (я поставил каждую минуту, чтобы не ждать запуска).
  - Не забываем сделать terrform destroy и удалить ресурсы, созданные руками.
 
- [Решение en]
+ [Solution en]
 - In the terraform folder: terraform apply
 - Set up jenkins by going to "public_address:8080" instance
 - Create a user by hand (https://aws.amazon.com/ru/getting-started/hands-on/backup-to-s3-cli/),
