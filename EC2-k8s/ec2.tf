@@ -1,9 +1,11 @@
 resource "aws_instance" "k8s-master-ec2" {
   #user_data = file("./scripts/jenkins.tpl")
   #  ami                  = data.aws_ami.latest_ubuntu.id
+  subnet_id            = "subnet-01012d45a11ed7a55"
   ami                  = "ami-015c25ad8763b2f11"
   instance_type        = "t2.medium"
   iam_instance_profile = aws_iam_instance_profile.k8s-cluster-master-profile.name
+  key_name             = "standart"
 
 
   vpc_security_group_ids = [aws_security_group.k8s-master-sg.id]
@@ -21,9 +23,11 @@ resource "aws_instance" "k8s-master-ec2" {
 resource "aws_instance" "k8s-worker-ec2" {
   #user_data = file("./scripts/jenkins.tpl")
   #  ami                  = data.aws_ami.latest_ubuntu.id
+  subnet_id            = "subnet-01012d45a11ed7a55"
   ami                  = "ami-015c25ad8763b2f11"
   instance_type        = "t2.medium"
   iam_instance_profile = aws_iam_instance_profile.k8s-cluster-worker-profile.name
+  key_name             = "standart"
 
 
   vpc_security_group_ids = [aws_security_group.k8s-worker-sg.id]
