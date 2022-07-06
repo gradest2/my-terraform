@@ -11,7 +11,10 @@ cat <<EOF > /tmp/script.sh
   curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
   echo "deb https://apt.kubernetes.io/ kubernetes-xenial main" > /etc/apt/sources.list.d/kubernetes.list
   apt update
+  apt-get install -y apt-transport-https ca-certificates curl
   apt install -y docker-ce kubelet kubeadm kubectl
+  systemctl enable docker
+  systemctl start docker
   hostnamectl set-hostname $(curl http://169.254.169.254/latest/meta-data/local-hostname)
   hostname
   swapoff -a
@@ -30,6 +33,21 @@ controllerManager:
   extraArgs:
     cloud-provider: "aws"
 EOF
+
+### cоздаём кластер
+kubeadm init --config /etc/kubernetes/aws.yml
+
+### cоздаём файл настроек kubelet (master)
+mkdir -p /home/ubuntu/.kube
+cp -i /etc/kubernetes/admin.conf /home/ubuntu/.kube/config
+chown ubuntu:ubuntu /home/ubuntu/.kube/config
+
+#Deploying a pod network (https://www.techrepublic.com/article/how-to-quickly-install-kubernetes-on-ubuntu/) https://linuxconfig.org/how-to-install-kubernetes-on-ubuntu-22-04-jammy-jellyfish-linux
+su ubuntu
+kubectl get nodes -o wide
+kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
+kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/k8s-manifests/kube-flannel-rbac.yml
+kubectl get pods --all-namespaces
 
 EOF
 
