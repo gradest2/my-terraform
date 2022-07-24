@@ -1,5 +1,5 @@
 resource "aws_instance" "k8s-master-ec2" {
-  user_data            = file("./scripts/k8s-master-ec2.tpl")
+  #user_data            = file("./scripts/k8s-master-ec2.tpl")
   subnet_id            = aws_subnet.k8s-cluster-subnet.id
   ami                  = data.aws_ami.latest_ubuntu.id
   instance_type        = "t2.medium"
