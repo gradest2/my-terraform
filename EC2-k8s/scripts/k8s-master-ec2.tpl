@@ -1,87 +1,92 @@
 #!/bin/bash
 
+
+#change hostname
+hostnamectl set-hostname $(curl http://169.254.169.254/latest/meta-data/local-hostname)
+
+
+#set env variables
+IPADDR=$(curl http://169.254.169.254/latest/meta-data/local-ipv4)
+NODENAME=$(hostname)
+
+
+#define installation script
 cat <<EOF > /tmp/script.sh
-  #! /bin/bash
+#! /bin/bash
 
-  # disable swap
-  sudo swapoff -a
-  # keeps the swaf off during reboot
-  sudo sed -i '/ swap / s/^\(.*\)$/#\1/g' /etc/fstab
+set -x
 
-  sudo apt-get update -y
-  sudo apt-get install -y \
-      apt-transport-https \
-      ca-certificates \
-      curl \
-      gnupg \
-      lsb-release
+# disable swap
+swapoff -a
+# keeps the swaf off during reboot
+sed -i '/ swap / s/^\(.*\)$/#\1/g' /etc/fstab
 
-  curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+apt-get update -y
+apt-get install -y \
+    apt-transport-https \
+    ca-certificates \
+    curl \
+    gnupg \
+    lsb-release
 
-  echo \
-    "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu \
-    $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
 
-  sudo apt-get update -y
-  sudo apt-get install docker-ce docker-ce-cli containerd.io -y
+echo \
+  "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu \
+  $(lsb_release -cs) stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null
 
-  # Following configurations are recomended in the kubenetes documentation for Docker runtime. Please refer https://kubernetes.io/docs/setup/production-environment/container-runtimes/#docker
+apt-get update -y
+apt-get install docker-ce docker-ce-cli containerd.io -y
 
-  cat <<EOF | sudo tee /etc/docker/daemon.json
-  {
-    "exec-opts": ["native.cgroupdriver=systemd"],
-    "log-driver": "json-file",
-    "log-opts": {
-      "max-size": "100m"
-    },
-    "storage-driver": "overlay2"
-  }
-  EOF
+# Following configurations are recomended in the kubenetes documentation for Docker runtime. Please refer https://kubernetes.io/docs/setup/production-environment/container-runtimes/#docker
 
-  sudo systemctl enable docker
-  sudo systemctl daemon-reload
-  sudo systemctl restart docker
+echo "{
+  "exec-opts": ["native.cgroupdriver=systemd"],
+  "log-driver": "json-file",
+  "log-opts": {
+    "max-size": "100m"
+  },
+  "storage-driver": "overlay2"
+}" | tee /etc/docker/daemon.json
 
-  echo "Docker Runtime Configured Successfully"
+systemctl enable docker
+systemctl daemon-reload
+systemctl restart docker
 
-
-  sudo apt-get update
-  sudo apt-get install -y apt-transport-https ca-certificates curl
-  sudo curl -fsSLo /usr/share/keyrings/kubernetes-archive-keyring.gpg https://packages.cloud.google.com/apt/doc/apt-key.gpg
-
-  echo "deb [signed-by=/usr/share/keyrings/kubernetes-archive-keyring.gpg] https://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee /etc/apt/sources.list.d/kubernetes.list
-
-  sudo apt-get update -y
-  sudo apt-get install -y kubelet kubeadm kubectl
-
-  # sudo apt-get install -y kubelet=1.20.6-00 kubectl=1.20.6-00 kubeadm=1.20.6-00
-  # reference https://stackoverflow.com/questions/49721708/how-to-install-specific-version-of-kubernetes
+echo "Docker Runtime Configured Successfully"
 
 
-  sudo apt-mark hold kubelet kubeadm kubectl
+apt-get update
+apt-get install -y apt-transport-https ca-certificates curl
+curl -fsSLo /usr/share/keyrings/kubernetes-archive-keyring.gpg https://packages.cloud.google.com/apt/doc/apt-key.gpg
 
-  #ip master node
-  IPADDR="10.0.0.99"
+echo "deb [signed-by=/usr/share/keyrings/kubernetes-archive-keyring.gpg] https://apt.kubernetes.io/ kubernetes-xenial main" | tee /etc/apt/sources.list.d/kubernetes.list
 
-  NODENAME=$(hostname -s)
+apt-get update -y
+apt-get install -y kubelet kubeadm kubectl
 
-  # fix init errors
-  rm /etc/containerd/config.toml
-  systemctl restart containerd
-
-  sudo kubeadm init --apiserver-advertise-address=$IPADDR  --apiserver-cert-extra-sans=$IPADDR  --pod-network-cidr=192.168.0.0/16 --node-name $NODENAME --ignore-preflight-errors Swap
+# apt-get install -y kubelet=1.20.6-00 kubectl=1.20.6-00 kubeadm=1.20.6-00
+# reference https://stackoverflow.com/questions/49721708/how-to-install-specific-version-of-kubernetes
 
 
-  mkdir -p $HOME/.kube
-    sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
-    sudo chown $(id -u):$(id -g) $HOME/.kube/config
+apt-mark hold kubelet kubeadm kubectl
 
-  curl https://docs.projectcalico.org/manifests/calico.yaml -O
+# fix init errors
+rm /etc/containerd/config.toml
+systemctl restart containerd
 
-  sleep 60
+kubeadm init --apiserver-advertise-address=$IPADDR  --apiserver-cert-extra-sans=$IPADDR  --pod-network-cidr=192.168.0.0/16 --node-name $NODENAME --ignore-preflight-errors Swap
 
-  kubectl apply -f calico.yaml
 
+mkdir /home/ubuntu/.kube
+cp -i /etc/kubernetes/admin.conf /home/ubuntu/.kube/config
+chown ubuntu:ubuntu /home/ubuntu/.kube/config
+
+curl https://docs.projectcalico.org/manifests/calico.yaml -O
+
+sleep 60
+
+kubectl apply -f calico.yaml
 EOF
 
 
