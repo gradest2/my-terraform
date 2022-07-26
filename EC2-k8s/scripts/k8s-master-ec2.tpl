@@ -5,11 +5,6 @@
 hostnamectl set-hostname $(curl http://169.254.169.254/latest/meta-data/local-hostname)
 
 
-#set env variables
-IPADDR=$(curl http://169.254.169.254/latest/meta-data/local-ipv4)
-NODENAME=$(hostname)
-
-
 #define installation script
 cat <<EOF > /tmp/script.sh
 #! /bin/bash
@@ -75,18 +70,65 @@ apt-mark hold kubelet kubeadm kubectl
 rm /etc/containerd/config.toml
 systemctl restart containerd
 
-kubeadm init --apiserver-advertise-address=$IPADDR  --apiserver-cert-extra-sans=$IPADDR  --pod-network-cidr=192.168.0.0/16 --node-name $NODENAME --ignore-preflight-errors Swap
+echo "---
+apiVersion: kubeadm.k8s.io/v1beta2
+kind: ClusterConfiguration
+networking:
+  serviceSubnet: "10.100.0.0/16"
+  podSubnet: "10.244.0.0/16"
+apiServer:
+  extraArgs:
+    cloud-provider: "aws"
+controllerManager:
+  extraArgs:
+    cloud-provider: "aws"" | tee aws.yml
+
+kubeadm init --config aws.yml
 
 
 mkdir /home/ubuntu/.kube
 cp -i /etc/kubernetes/admin.conf /home/ubuntu/.kube/config
 chown ubuntu:ubuntu /home/ubuntu/.kube/config
 
-curl https://docs.projectcalico.org/manifests/calico.yaml -O
-
 sleep 60
 
+su ubuntu
+curl https://docs.projectcalico.org/manifests/calico.yaml -O
 kubectl apply -f calico.yaml
+
+
+#test service configuration. Please apply this file manualy.
+echo "kind: Service
+apiVersion: v1
+metadata:
+  name: hello
+spec:
+  type: LoadBalancer
+  selector:
+    app: hello
+  ports:
+    - name: http
+      protocol: TCP
+      # ELB's port
+      port: 80
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hello
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: hello
+  template:
+    metadata:
+      labels:
+        app: hello
+    spec:
+      containers:
+        - name: hello
+          image: nginx" | tee elb-example.yml
 EOF
 
 

@@ -64,6 +64,22 @@ apt-mark hold kubelet kubeadm kubectl
 # fix init errors
 rm /etc/containerd/config.toml
 systemctl restart containerd
+
+# add temp join configuration file (join params see in /tmp/script.log)
+echo "---
+apiVersion: kubeadm.k8s.io/v1beta2
+kind: JoinConfiguration
+discovery:
+  bootstrapToken:
+    token: "rat2th.qzmvv988e3pz9ywa[Token]"
+    apiServerEndpoint: "10.0.0.102:6443[Master_node]"
+    caCertHashes:
+      - "sha256:ce983b5fbf4f067176c4641a48dc6f7203d8bef972cb9d2d9bd34831a864d744[Hash]"
+nodeRegistration:
+  name: ip-10-0-0-186.eu-west-3.compute.internal[worker_node]
+  kubeletExtraArgs:
+    cloud-provider: aws" | tee /home/ubuntu/node.yml
+#[manual]: sudo kubeadm join --config /home/ubuntu/node.yml
 EOF
 
 
