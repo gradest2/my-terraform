@@ -1,0 +1,21 @@
+## Based on
+https://rtfm.co.ua/kubernetes-znakomstvo-chast-2-sozdanie-klastera-s-aws-cloud-provider-i-aws-loadbalancer/#%D0%9F%D0%BE%D0%B4%D0%BA%D0%BB%D1%8E%D1%87%D0%B5%D0%BD%D0%B8%D0%B5_Worker_Node
+
+
+## Tutorial
+
+1. Apply terraform script.
+2. Connect to master node via ssh and check: tail -f /tmp/script.log
+3. Copy join command from /tmp/script.log.
+4. Connect to a worker node and edit /ubuntu/home/node.yml.
+5. sudo kubeadm join --config /home/ubuntu/node.yml
+6. On master node check:
+   kubectl get node -o wide
+7. Apply test service configuration:
+   kubectl apply -f /home/ubuntu/elb-example.yml
+   kubectl get pod
+   kubectl get service
+8. Check classic lb in aws, also check nginx linc (aws lb dns)
+9. Delete:
+   - kubectl delete -f /home/ubuntu/elb-example.yml
+   - terraform destroy

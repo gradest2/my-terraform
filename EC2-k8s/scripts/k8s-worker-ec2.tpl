@@ -67,7 +67,7 @@ systemctl restart containerd
 
 # add temp join configuration file (join params see in /tmp/script.log)
 echo "---
-apiVersion: kubeadm.k8s.io/v1beta2
+apiVersion: kubeadm.k8s.io/v1beta3
 kind: JoinConfiguration
 discovery:
   bootstrapToken:
@@ -79,7 +79,6 @@ nodeRegistration:
   name: ip-10-0-0-186.eu-west-3.compute.internal[worker_node]
   kubeletExtraArgs:
     cloud-provider: aws" | tee /home/ubuntu/node.yml
-#[manual]: sudo kubeadm join --config /home/ubuntu/node.yml
 EOF
 
 

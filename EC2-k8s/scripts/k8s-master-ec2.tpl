@@ -92,9 +92,8 @@ chown ubuntu:ubuntu /home/ubuntu/.kube/config
 
 sleep 60
 
-su ubuntu
 curl https://docs.projectcalico.org/manifests/calico.yaml -O
-kubectl apply -f calico.yaml
+sudo -u ubuntu kubectl apply -f calico.yaml
 
 
 #test service configuration. Please apply this file manualy.
@@ -128,7 +127,7 @@ spec:
     spec:
       containers:
         - name: hello
-          image: nginx" | tee elb-example.yml
+          image: nginx" | tee /home/ubuntu/elb-example.yml
 EOF
 
 
