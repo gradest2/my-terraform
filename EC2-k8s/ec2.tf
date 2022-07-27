@@ -1,8 +1,7 @@
 resource "aws_instance" "k8s-master-ec2" {
-  #user_data = file("./scripts/jenkins.tpl")
-  #  ami                  = data.aws_ami.latest_ubuntu.id
-  subnet_id            = "subnet-01012d45a11ed7a55"
-  ami                  = "ami-015c25ad8763b2f11"
+  user_data            = file("./scripts/k8s-master-ec2.tpl")
+  subnet_id            = aws_subnet.k8s-cluster-subnet.id
+  ami                  = data.aws_ami.latest_ubuntu.id
   instance_type        = "t2.medium"
   iam_instance_profile = aws_iam_instance_profile.k8s-cluster-master-profile.name
   key_name             = "standart"
@@ -21,10 +20,9 @@ resource "aws_instance" "k8s-master-ec2" {
 }
 
 resource "aws_instance" "k8s-worker-ec2" {
-  #user_data = file("./scripts/jenkins.tpl")
-  #  ami                  = data.aws_ami.latest_ubuntu.id
-  subnet_id            = "subnet-01012d45a11ed7a55"
-  ami                  = "ami-015c25ad8763b2f11"
+  user_data            = file("./scripts/k8s-worker-ec2.tpl")
+  ami                  = data.aws_ami.latest_ubuntu.id
+  subnet_id            = aws_subnet.k8s-cluster-subnet.id
   instance_type        = "t2.medium"
   iam_instance_profile = aws_iam_instance_profile.k8s-cluster-worker-profile.name
   key_name             = "standart"
@@ -40,4 +38,7 @@ resource "aws_instance" "k8s-worker-ec2" {
     Name                               = "k8s-worker-ec2"
     "kubernetes.io/cluster/kubernetes" = "owned"
   }
+
+  depends_on = [aws_instance.k8s-master-ec2]
+
 }
