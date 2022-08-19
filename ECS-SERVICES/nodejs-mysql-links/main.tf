@@ -1,5 +1,5 @@
 resource "aws_cloudwatch_log_group" "this" {
-  name_prefix       = "hnodejs-mysql-links-"
+  name_prefix       = "nodejs-mysql-links-"
   retention_in_days = 1
 }
 
