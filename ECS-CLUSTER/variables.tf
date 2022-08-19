@@ -6,3 +6,12 @@ variable "region" {
 variable "cluster_name" {
   default = "ECS-CLUSTER-BEST"
 }
+
+variable "tags" {
+  default = {
+    Environment = "Development"
+    Project     = "ECS-CLUSTER-BEST"
+  }
+  description = "Resource tags"
+  type        = map(string)
+}

@@ -1,7 +1,7 @@
-resource "aws_security_group" "k8s-master-sg" {
+resource "aws_security_group" "ecs-cluster-sg" {
   name        = "${var.cluster_name}-sg"
   description = "${var.cluster_name}-sg"
-  vpc_id      = aws_vpc.ecs-cluster-vpc.id
+  vpc_id      = module.vpc.vpc_id
 
   ingress {
     description = "SSH access"
