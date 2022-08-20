@@ -35,11 +35,22 @@ resource "aws_security_group" "sg_jenkins" {
 
 resource "aws_instance" "jenkins" {
   ami             = data.aws_ami.latest_jenkins.id
-  instance_type   = "t2.micro"
+  instance_type   = "t2.small"
   security_groups = [aws_security_group.sg_jenkins.id]
   subnet_id       = data.terraform_remote_state.net.outputs.public_subnets[0]
   user_data       = file("./script.tpl")
   key_name        = "standart"
+
+  root_block_device {
+    volume_type = "gp2"
+    volume_size = 15
+    tags = merge(
+      var.tags,
+      {
+        Name = "Jenkins"
+      }
+    )
+  }
 
   tags = merge(
     var.tags,
