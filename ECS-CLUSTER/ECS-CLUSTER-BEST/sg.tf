@@ -1,7 +1,7 @@
 resource "aws_security_group" "ecs-cluster-sg" {
   name        = "${var.cluster_name}-sg"
   description = "${var.cluster_name}-sg"
-  vpc_id      = module.vpc.vpc_id
+  vpc_id      = data.terraform_remote_state.net.outputs.vpc_id
 
   ingress {
     description = "SSH access"

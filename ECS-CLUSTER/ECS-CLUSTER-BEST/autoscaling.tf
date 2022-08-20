@@ -14,6 +14,7 @@ module "autoscaling" {
 
   security_groups                 = [aws_security_group.ecs-cluster-sg.id]
   user_data                       = base64encode(local.user_data)
+  key_name                        = "standart"
   ignore_desired_capacity_changes = true
 
   create_iam_instance_profile = true
@@ -24,7 +25,7 @@ module "autoscaling" {
     AmazonSSMManagedInstanceCore        = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
   }
 
-  vpc_zone_identifier = module.vpc.private_subnets
+  vpc_zone_identifier = data.terraform_remote_state.net.outputs.private_subnets
   health_check_type   = "EC2"
   min_size            = 0
   max_size            = 1
