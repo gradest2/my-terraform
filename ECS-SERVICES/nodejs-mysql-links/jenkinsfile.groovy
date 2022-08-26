@@ -17,8 +17,9 @@ pipeline {
   }
 
   environment {
-    project = "nodejs-mysql-links"
+    project = "901576725721.dkr.ecr.eu-central-1.amazonaws.com/ecr-ecs-cluster-best"
     version = "${TAG}".toLowerCase().replaceAll("origin/", "")
+    region  = "eu-central-1"
   }
   options {
     timestamps()
@@ -34,14 +35,17 @@ pipeline {
             //credentialsId: '12345-1234-4696-af25-123455',
             url: 'https://github.com/FaztTech/nodejs-mysql-links'
           sh "docker build -t '${project}:${version}' ."
-          // def image = docker.image("${project}:${version}")
-          //    image.inside {
-          //      sh "cp /dist/gameHeroes ${WORKSPACE}"
-          //      sh "cp /data.yaml ${WORKSPACE}"
-          //    }
-          // sh "tar -czvf ${project}_${version}.tar.gz gameHeroes data.yaml"
-          // archiveArtifacts "gameHeroes, data.yaml, ${project}_${version}.tar.gz"
+          sh ""
         }
+      }
+    }
+  }
+
+  stage('Push image to AWS ECR') {
+    steps {
+      script {
+        sh("echo 'Pushing to ECR repo: ${project}:${version}'")
+        sh("export AWS_REGION=${region} docker push ${project}:${version}")
       }
     }
   }
