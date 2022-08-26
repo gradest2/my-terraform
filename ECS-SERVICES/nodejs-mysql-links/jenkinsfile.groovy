@@ -39,16 +39,16 @@ pipeline {
         }
       }
     }
-  }
-
-  stage('Push image to AWS ECR') {
-    steps {
-      script {
-        sh("echo 'Pushing to ECR repo: ${project}:${version}'")
-        sh("export AWS_REGION=${region} docker push ${project}:${version}")
+    stage('Push image to AWS ECR') {
+      steps {
+        script {
+          sh("echo 'Pushing to ECR repo: ${project}:${version}'")
+          sh("export AWS_REGION=${region} docker push ${project}:${version}")
+        }
       }
     }
   }
+
 
   post {
     always {
