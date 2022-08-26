@@ -43,7 +43,8 @@ pipeline {
       steps {
         script {
           sh("echo 'Pushing to ECR repo: ${project}:${version}'")
-          sh("export AWS_REGION=${region} docker push ${project}:${version}")
+          sh ("aws ecr get-login-password --region ${region} | docker login --username AWS --password-stdin 901576725721.dkr.ecr.eu-central-1.amazonaws.com")
+          sh("docker push ${project}:${version}")
         }
       }
     }
