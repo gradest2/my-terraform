@@ -1,12 +1,13 @@
 pipeline {
 
-  agent {
-      docker {
-        image 'docker:latest'
-        args '-u root --privileged'
-      }
-    }
+  // agent {
+  //     docker {
+  //       image 'docker:latest'
+  //       args '-u root --privileged'
+  //     }
+  //   }
 
+  agent any;
   parameters {
     //Choose application branch
     gitParameter name: 'TAG',
