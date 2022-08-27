@@ -11,8 +11,8 @@ pipeline {
     //Choose application branch
     gitParameter name: 'TAG',
                  type: 'PT_BRANCH_TAG',
-                 defaultValue: 'ECS-CLUSTER',
-                 useRepository: "https://github.com/FaztTech/nodejs-mysql-links"
+                 defaultValue: 'main',
+                 useRepository: "https://github.com/gradest2/my-terraform"
   }
 
   environment {
@@ -29,6 +29,9 @@ pipeline {
     stage('Build') {
       steps {
         script {
+          git branch: "${version}",
+            //credentialsId: '12345-1234-4696-af25-123455',
+            url: 'https://github.com/gradest2/my-terraform'
           sh "docker build -t '${project}:${version}' ."
         }
       }
