@@ -18,7 +18,7 @@ pipeline {
   environment {
     project        = "baseimage"
     version        = "${TAG}".replaceAll("origin/", "")
-    dir_dockerfile = "./ECS-SERVICES/baseimage"
+    dir_dockerfile = "./ECS-SERVICES/BaseImage"
   }
   options {
     timestamps()
