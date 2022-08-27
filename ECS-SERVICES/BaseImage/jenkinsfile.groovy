@@ -17,7 +17,7 @@ pipeline {
 
   environment {
     project = "baseimage"
-    version = "${TAG}".toLowerCase().replaceAll("origin/", "")
+    version = "${TAG}".replaceAll("origin/", "")
   }
   options {
     timestamps()
