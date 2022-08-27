@@ -17,7 +17,7 @@ pipeline {
 
   environment {
     project = "baseimage"
-    version = "latest"
+    version = "${TAG}".toLowerCase().replaceAll("origin/", "")
   }
   options {
     timestamps()
@@ -32,7 +32,7 @@ pipeline {
           git branch: "${version}",
             //credentialsId: '12345-1234-4696-af25-123455',
             url: 'https://github.com/gradest2/my-terraform'
-          sh "docker build -t '${project}:${version}' ."
+          sh "docker build -t '${project}:latest' ."
         }
       }
     }
