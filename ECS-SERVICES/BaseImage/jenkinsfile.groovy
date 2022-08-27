@@ -18,7 +18,7 @@ pipeline {
   environment {
     project        = "baseimage"
     version        = "${TAG}".replaceAll("origin/", "")
-    dir_dockerfile = "./ECS-SERVICES/BaseImage"
+    dir_dockerfile = "$WORKSPACE/ECS-SERVICES/BaseImage/"
   }
   options {
     timestamps()
@@ -34,7 +34,7 @@ pipeline {
             //credentialsId: '12345-1234-4696-af25-123455',
             url: 'https://github.com/gradest2/my-terraform'
           sh "cd ${dir_dockerfile}"
-          sh "docker build -t '${project}:latest' ."
+          sh "docker build -t '${project}:latest' ${dir_dockerfile}"
         }
       }
     }
