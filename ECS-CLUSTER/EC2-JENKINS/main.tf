@@ -35,7 +35,7 @@ resource "aws_security_group" "sg_jenkins" {
 
 resource "aws_instance" "jenkins" {
   ami             = data.aws_ami.latest_ubuntu.id
-  instance_type   = "t2.small"
+  instance_type   = "t2.micro" #"t2.small"
   security_groups = [aws_security_group.sg_jenkins.id]
   subnet_id       = data.terraform_remote_state.net.outputs.public_subnets[0]
   user_data       = file("./script.tpl")
