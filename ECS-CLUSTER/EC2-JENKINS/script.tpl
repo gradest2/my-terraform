@@ -26,3 +26,9 @@ apt-get -y install unzip git openjdk-11-jre jenkins
 usermod -aG docker jenkins
 systemctl start jenkins
 systemctl enable jenkins
+
+#AWS install
+curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+unzip awscliv2.zip
+./aws/install
+rm -rf awscliv2*
