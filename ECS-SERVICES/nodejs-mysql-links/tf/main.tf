@@ -10,9 +10,21 @@ resource "aws_ecs_task_definition" "this" {
 [
   {
     "name": "nodejs-mysql-links",
-    "image": "nodejs-mysql-links",
+    "image": "901576725721.dkr.ecr.eu-central-1.amazonaws.com/ecr-ecs-cluster-best:master",
     "cpu": 0,
     "memory": 128,
+    "environment": [
+      {"name": "NODE_ENV",          "value": "development"},
+      {"name": "DATABASE_HOST",     "value": "db"},
+      {"name": "DATABASE_USER",     "value": "fazt"},
+      {"name": "DATABASE_PASSWORD", "value": "mypassword"}
+    ],
+    "portMappings": [
+      {
+        "containerPort": 80,
+        "hostPort": 80
+      }
+    ],
     "logConfiguration": {
       "logDriver": "awslogs",
       "options": {
