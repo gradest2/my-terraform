@@ -33,5 +33,9 @@ unzip awscliv2.zip
 ./aws/install
 rm -rf awscliv2*
 
-touch /var/lib/jenkins/.aws/config
-touch /var/lib/jenkins/.aws/credentials
+#Terraform install
+wget https://releases.hashicorp.com/terraform/1.2.7/terraform_1.2.7_linux_amd64.zip
+unzip terraform_1.2.7_linux_amd64.zip
+mv terraform /usr/local/bin/
+rm terraform_1.2.7_linux_amd64.zip
+chown -R jenkins:jenkins /usr/local/bin/terraform

@@ -1,12 +1,5 @@
 pipeline {
 
-  // agent {
-  //     docker {
-  //       image 'docker:latest'
-  //       args '-u root --privileged'
-  //     }
-  //   }
-
   agent any;
   parameters {
     //Choose application branch
@@ -20,6 +13,7 @@ pipeline {
     project = "901576725721.dkr.ecr.eu-central-1.amazonaws.com/ecr-ecs-cluster-best"
     version = "${TAG}".toLowerCase().replaceAll("origin/", "")
     region  = "eu-central-1"
+    dir_app = "$WORKSPACE/ECS-SERVICES/nodejs-mysql-links/tf"
   }
   options {
     timestamps()
@@ -48,6 +42,21 @@ pipeline {
         }
       }
     }
+
+    stage('Deploy Application') {
+      steps {
+        script {
+
+          git branch: "${version}",
+            url: 'https://github.com/gradest2/my-terraform'
+          sh "cd ${dir_app}"
+          sh "terraform plan"
+          sh "terraform apply -auto-approve"
+        }
+      }
+    }
+
+
   }
 
 
