@@ -1,3 +1,7 @@
+provider "aws" {
+  region = var.region
+}
+
 module "rds" {
   source = "git::https://github.com/cloudposse/terraform-aws-rds.git?ref=0.38.8"
   # Cloud Posse recommends pinning every module to a specific version
@@ -7,7 +11,7 @@ module "rds" {
   name      = "ecs-cluster-best"
   #  dns_zone_id                 = "Z89FN1IW975KPE"
   #  host_name                   = "db"
-  #  security_group_ids          = ["sg-xxxxxxxx"]
+  security_group_ids = [aws_security_group.rds-sg.id]
   #  ca_cert_identifier          = "rds-ca-2019"
   #  allowed_cidr_blocks         = ["XXX.XXX.XXX.XXX/32"]
   database_name     = "dblinks"
@@ -15,18 +19,18 @@ module "rds" {
   database_password = "mypassword"
   database_port     = 3306
   #  multi_az                    = true
-  storage_type = "gp2"
-  #  allocated_storage           = 100
-  #  storage_encrypted           = true
+  storage_type         = "gp2"
+  allocated_storage    = 20
+  storage_encrypted    = false
   engine               = "mysql"
-  engine_version       = "5.7.17"
-  major_engine_version = "5.7"
+  engine_version       = "8.0.28"
+  major_engine_version = "8.0"
   instance_class       = "db.t2.micro"
-  db_parameter_group   = "mysql5.7"
-  option_group_name    = "mysql-options"
-  publicly_accessible  = false
-  subnet_ids           = data.terraform_remote_state.net.outputs.private_subnets
-  vpc_id               = data.terraform_remote_state.net.outputs.vpc_id
+  db_parameter_group   = "mysql8.0"
+  #  option_group_name    = "mysql-options"
+  publicly_accessible = false
+  subnet_ids          = data.terraform_remote_state.net.outputs.private_subnets
+  vpc_id              = data.terraform_remote_state.net.outputs.vpc_id
   #  snapshot_identifier         = "rds:production-2015-06-26-06-05"
   #  auto_minor_version_upgrade  = true
   #  allow_major_version_upgrade = false
@@ -50,4 +54,8 @@ module "rds" {
   #       ]
   #   }
   # ]
+
+  tags = merge(
+    var.tags
+  )
 }
