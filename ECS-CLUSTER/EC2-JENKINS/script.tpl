@@ -22,7 +22,7 @@ echo deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc] \
   https://pkg.jenkins.io/debian-stable binary/ | tee \
   /etc/apt/sources.list.d/jenkins.list > /dev/null
 apt-get -y update
-apt-get -y install unzip git openjdk-11-jre jenkins
+apt-get -y install zip unzip git openjdk-11-jre jenkins
 usermod -aG docker jenkins
 systemctl start jenkins
 systemctl enable jenkins
