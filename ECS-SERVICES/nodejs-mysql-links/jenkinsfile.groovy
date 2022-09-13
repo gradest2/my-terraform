@@ -29,7 +29,6 @@ pipeline {
             //credentialsId: '12345-1234-4696-af25-123455',
             url: 'https://github.com/FaztTech/nodejs-mysql-links'
           sh "docker build -t '${project}:${version}' ."
-          sh ""
         }
       }
     }
@@ -46,9 +45,10 @@ pipeline {
     stage('Deploy Application') {
       steps {
         script {
-
           git branch: "${version}",
             url: 'https://github.com/gradest2/my-terraform'
+          sh "pwd"
+          sh "ls -la"
           sh "cd ${dir_app}"
           sh "terraform plan"
           //sh "terraform apply -auto-approve"
