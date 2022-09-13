@@ -13,13 +13,13 @@ module "alb" {
   #  attributes = var.attributes
   #  delimiter  = var.delimiter
 
-  vpc_id             = data.terraform_remote_state.net.outputs.vpc_id
-  security_group_ids = [aws_security_group.alb-sg.id]
-  subnet_ids         = data.terraform_remote_state.net.outputs.public_subnets
+  vpc_id              = data.terraform_remote_state.net.outputs.vpc_id
+  security_group_ids  = [aws_security_group.alb-sg.id]
+  subnet_ids          = data.terraform_remote_state.net.outputs.public_subnets
+  access_logs_enabled = false
   #  internal                          = var.internal
   #  http_enabled                      = var.http_enabled
   #  http_redirect                     = var.http_redirect
-  #  access_logs_enabled               = var.access_logs_enabled
   #  cross_zone_load_balancing_enabled = var.cross_zone_load_balancing_enabled
   #  http2_enabled                    = var.http2_enabled
   #  idle_timeout                     = var.idle_timeout
