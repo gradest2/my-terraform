@@ -51,7 +51,7 @@ pipeline {
             url: 'https://github.com/gradest2/my-terraform'
           sh "cd ${dir_app}"
           sh "terraform plan"
-          sh "terraform apply -auto-approve"
+          //sh "terraform apply -auto-approve"
         }
       }
     }
