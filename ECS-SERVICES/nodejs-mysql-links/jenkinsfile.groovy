@@ -13,7 +13,6 @@ pipeline {
     project = "901576725721.dkr.ecr.eu-central-1.amazonaws.com/ecr-ecs-cluster-best"
     version = "${TAG}".toLowerCase().replaceAll("origin/", "")
     region  = "eu-central-1"
-    dir_app = "$WORKSPACE/ECS-SERVICES/nodejs-mysql-links/tf"
   }
   options {
     timestamps()
@@ -49,7 +48,7 @@ pipeline {
             url: 'https://github.com/gradest2/my-terraform'
           sh "pwd"
           sh "ls -la"
-          sh "cd ${dir_app}"
+          sh "cd $WORKSPACE/ECS-SERVICES/nodejs-mysql-links/tf"
           sh "pwd"
           sh "ls -la"
           sh "terraform init"
