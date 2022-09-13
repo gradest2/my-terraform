@@ -1,3 +1,7 @@
+provider "aws" {
+  region = var.region
+}
+
 resource "aws_cloudwatch_log_group" "this" {
   name_prefix       = "nodejs-mysql-links-"
   retention_in_days = 1
@@ -28,7 +32,7 @@ resource "aws_ecs_task_definition" "this" {
     "logConfiguration": {
       "logDriver": "awslogs",
       "options": {
-        "awslogs-region": "${region}",
+        "awslogs-region": "${var.region}",
         "awslogs-group": "${aws_cloudwatch_log_group.this.name}",
         "awslogs-stream-prefix": "ec2"
       }

@@ -47,10 +47,6 @@ pipeline {
           git branch: "ECS-CLUSTER",
             url: 'https://github.com/gradest2/my-terraform'
           dir("$WORKSPACE/ECS-SERVICES/nodejs-mysql-links/tf") {
-              sh "pwd"
-              sh "cd "
-              sh "pwd"
-              sh "ls -la"
               sh "terraform init"
               sh "terraform plan"
           }
