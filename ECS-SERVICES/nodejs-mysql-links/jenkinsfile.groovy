@@ -50,6 +50,8 @@ pipeline {
           sh "pwd"
           sh "ls -la"
           sh "cd ${dir_app}"
+          sh "pwd"
+          sh "ls -la"
           sh "terraform init"
           sh "terraform plan"
           //sh "terraform apply -auto-approve"
