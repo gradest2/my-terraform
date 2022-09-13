@@ -45,7 +45,7 @@ pipeline {
     stage('Deploy Application') {
       steps {
         script {
-          git branch: "${version}",
+          git branch: "ECS-CLUSTER",
             url: 'https://github.com/gradest2/my-terraform'
           sh "pwd"
           sh "ls -la"
