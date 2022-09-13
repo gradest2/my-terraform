@@ -46,13 +46,14 @@ pipeline {
         script {
           git branch: "ECS-CLUSTER",
             url: 'https://github.com/gradest2/my-terraform'
-          sh "pwd"
-          sh "ls -la"
-          sh "cd $WORKSPACE/ECS-SERVICES/nodejs-mysql-links/tf"
-          sh "pwd"
-          sh "ls -la"
-          sh "terraform init"
-          sh "terraform plan"
+          dir("$WORKSPACE/ECS-SERVICES/nodejs-mysql-links/tf") {
+              sh "pwd"
+              sh "cd "
+              sh "pwd"
+              sh "ls -la"
+              sh "terraform init"
+              sh "terraform plan"
+          }
           //sh "terraform apply -auto-approve"
         }
       }
