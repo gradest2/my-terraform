@@ -1,0 +1,112 @@
+vpc:
+  network_description: "terraform-created"
+  network_name: "vpc-terraform"
+  create_vpc: true
+  labels: {
+    managed: "terraform",
+    tag:     "vpc"
+  }
+
+subnets:
+  public_subnets: []
+  private_subnets:
+    - name: "subnet-d-terraform"
+      zone: "ru-central1-d"
+      v4_cidr_blocks: ["10.241.0.0/24"]
+  create_sg: false
+  create_nat_gw: false
+
+sg:
+  k8s-master-sg:
+    description: "Security group for K8s Master"
+    labels:
+      env: "dev"
+    egresses:
+      - from_port: 0
+        to_port: 65535
+        port: -1
+        protocol: "ANY"
+        description: "Allow ALL"
+        v4_cidr_blocks: 
+          - "0.0.0.0/0"
+    ingresses:
+      - from_port: -1
+        to_port: -1
+        port: 22
+        protocol: "TCP"
+        description: "Allow SSH"
+        v4_cidr_blocks: 
+          - "0.0.0.0/0"
+      - from_port: -1
+        to_port: -1
+        port: 6443
+        protocol: "TCP"
+        description: "Allow Kubernetes API Server"
+        v4_cidr_blocks: 
+          - "0.0.0.0/0"
+  k8s-worker-sg:
+    description: "Security group for K8s Master"
+    labels:
+      env: "dev"
+    egresses:
+      - from_port: 0
+        to_port: 65535
+        port: -1
+        protocol: "ANY"
+        description: "Allow ALL"
+        v4_cidr_blocks: 
+          - "0.0.0.0/0"
+    ingresses:
+      - from_port: -1
+        to_port: -1
+        port: 22
+        protocol: "TCP"
+        description: "Allow SSH"
+        v4_cidr_blocks: 
+          - "0.0.0.0/0"
+      - from_port: -1
+        to_port: -1
+        port: 6443
+        protocol: "TCP"
+        description: "Allow Kubernetes API Server"
+        v4_cidr_blocks: 
+          - "0.0.0.0/0"
+instances:
+  k8s-master:
+    labels:
+      env: "dev"
+    image_family: ubuntu-2404-lts-oslogin
+    zone: "ru-central1-d"
+    memory: 2
+    gpus: 0
+    cores: 2
+    core_fraction: 100
+    serial_port_enable: true
+    allow_stopping_for_update: true
+    monitoring: false
+    backup: false
+    enable-oslogin: true
+    preemptible: true
+    boot_disk:
+      boot_disk_size: 30
+      block_size: 4096
+      type: "network-ssd"
+  k8s-worker:
+    labels:
+      env: "dev"
+    image_family: ubuntu-2404-lts-oslogin
+    zone: "ru-central1-d"
+    memory: 2
+    gpus: 0
+    cores: 2
+    core_fraction: 100
+    serial_port_enable: true
+    allow_stopping_for_update: true
+    monitoring: false
+    backup: false
+    enable-oslogin: true
+    preemptible: true
+    boot_disk:
+      boot_disk_size: 30
+      block_size: 4096
+      type: "network-ssd"
